@@ -21,7 +21,7 @@
 namespace poggit\virion\devirion;
 
 use pocketmine\plugin\PluginBase;
-use pocketmine\scheduler\PluginTask;
+use pocketmine\scheduler\Task;
 
 class DEVirion extends PluginBase{
 	/** @var VirionClassLoader */
@@ -74,7 +74,7 @@ class DEVirion extends PluginBase{
 	 */
 	public function onEnable(){
 		if(count($this->classLoader->getKnownAntigens()) > 0){
-			$this->getServer()->getScheduler()->scheduleRepeatingTask(new class($this) extends PluginTask{
+			$this->getServer()->getScheduler()->scheduleRepeatingTask(new class($this) extends Task{
 				public function onRun(int $currentTick){
 					/** @var DEVirion $owner */
 					$owner = $this->getOwner();
