@@ -62,9 +62,9 @@ class DEVirion extends PluginBase{
 		if(count($this->classLoader->getKnownAntigens()) > 0){
 			$this->getLogger()->warning("Virions should be bundled into plugins, not redistributed separately! Do NOT use DEVirion on production servers!!");
 			$this->classLoader->register(true);
-			$size = $this->getServer()->getScheduler()->getAsyncTaskPoolSize();
+			$size = $this->getServer()->getAsyncPool()->getSize();
 			for($i = 0; $i < $size; $i++){
-				$this->getServer()->getScheduler()->scheduleAsyncTaskToWorker(new RegisterClassLoaderAsyncTask($this->classLoader), $i);
+				$this->getServer()->getAsyncPool()->submitTask(new RegisterClassLoaderAsyncTask($this->classLoader), $i);
 			}
 		}
 	}
@@ -74,16 +74,17 @@ class DEVirion extends PluginBase{
 	 */
 	public function onEnable(){
 		if(count($this->classLoader->getKnownAntigens()) > 0){
-			$this->getServer()->getScheduler()->scheduleRepeatingTask(new class($this) extends Task{
-				public function onRun(int $currentTick){
-					/** @var DEVirion $owner */
-					$owner = $this->getOwner();
-					$messages = $owner->getVirionClassLoader()->getMessages();
-					while ($messages->count() > 0){
-						$owner->getLogger()->warning($messages->shift());
-					}
-				}
-			}, 1);
+			// TODO: This is broken in 4.0.0 because the handler is only passed the owner's name
+			// $this->getScheduler()->scheduleRepeatingTask(new class($this) extends Task{
+			// 	public function onRun(int $currentTick){
+			// 		/** @var DEVirion $owner */
+			// 		$owner = $this->getHandler()->getOwnerName();
+			// 		$messages = $owner->getVirionClassLoader()->getMessages();
+			// 		while ($messages->count() > 0){
+			// 			$owner->getLogger()->warning($messages->shift());
+			// 		}
+			// 	}
+			// }, 1);
 		}
 	}
 
